@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم المتقدمة | iHair Admin Pro</title>
+
+    <!-- Google Fonts (Cairo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="admin.css?v=2">
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loading-text">جاري التحميل...</p>
+    </div>
+
+    <!-- Login Authentication Section -->
+    <div id="auth-section" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">⚡</div>
+                <h1>iHair Admin Pro</h1>
+                <p>تسجيل الدخول للوحة التحكم المتقدمة</p>
+            </div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="admin-email">البريد الإلكتروني:</label>
+                    <input type="email" id="admin-email" placeholder="admin@admin.com" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-password">كلمة المرور:</label>
+                    <input type="password" id="admin-password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <div id="auth-error" class="error-message"></div>
+
+                <button type="submit" class="btn btn-primary">تسجيل الدخول</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Section -->
+    <div id="dashboard-section" class="dashboard-container" style="display: none;">
+        
+        <!-- Sticky Top Bar Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="brand-title">
+                    <span class="brand-icon">⚡</span>
+                    <div>
+                        <h1>لوحة الإدارة المتقدمة</h1>
+                        <small>إدارة المتجر، تتبع Meta Pixel، و CAPI</small>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <span class="user-badge">👤 الأدمن الرئيسي</span>
+                    <a href="index.html" target="_blank" class="btn-subtle" title="معاينة الموقع">🌐 معاينة المتجر</a>
+                    <button id="logout-btn" class="btn-logout">تسجيل الخروج 🚪</button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <nav class="admin-nav-tabs">
+                <button class="nav-tab active" data-tab="tab-overview">
+                    <span class="tab-icon">📊</span>
+                    <span>النظرة العامة والتحليلات</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-tracking">
+                    <span class="tab-icon">🎯</span>
+                    <span>Meta Pixel & CAPI</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-store">
+                    <span class="tab-icon">🛍️</span>
+                    <span>إعدادات المتجر والأسعار</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-images">
+                    <span class="tab-icon">🖼️</span>
+                    <span>إدارة الصور والوسائط</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-orders">
+                    <span class="tab-icon">📋</span>
+                    <span>إدارة الطلبات</span>
+                    <span id="orders-badge-count" class="badge-pill">0</span>
+                </button>
+                <button class="nav-tab" data-tab="tab-security">
+                    <span class="tab-icon">⚙️</span>
+                    <span>الأمان والنظام</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- Dashboard Main Body Content -->
+        <main class="dashboard-body">
+
+            <!-- TAB 1: OVERVIEW & ANALYTICS -->
+            <section id="tab-overview" class="tab-content active">
+                <div class="overview-welcome">
+                    <h2>أهلاً بك في لوحة تحكم iHair Pro 👋</h2>
+                    <p>مراقبة وتحكم شامل في تتبع التحويلات Meta CAPI، إعدادات الأسعار، وإدارة الوسائط</p>
+                </div>
+
+                <!-- KPI Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon icon-blue">👁️</div>
+                        <div class="stat-info">
+                            <span class="stat-title">إجمالي زيارات الموقع</span>
+                            <h3 id="stat-views-val">1,420</h3>
+                            <small class="stat-meta">زيارة في آخر 30 يوماً</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon icon-yellow">🛒</div>
+                        <div class="stat-info">
+                            <span class="stat-title">محاولات الشراء (Initiate Checkout)</span>
+                            <h3 id="stat-checkouts-val">184</h3>
+                            <small class="stat-meta">معدل اهتمام ممتاز</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon icon-green">📦</div>
+                        <div class="stat-info">
+                            <span class="stat-title">الطلبات المسجلة</span>
+                            <h3 id="stat-orders-val">0</h3>
+                            <small class="stat-meta">طلب مكتمل الدفع عند الاستلام</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon icon-purple">💰</div>
+                        <div class="stat-info">
+                            <span class="stat-title">إجمالي المبيعات المستهدفة</span>
+                            <h3 id="stat-revenue-val">0 ج.م</h3>
+                            <small class="stat-meta">بناءً على طلبات العملاء</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status & Integration Health Grid -->
+                <div class="dashboard-grid-2col">
+                    <!-- Integration Health Card -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>🔗 حالة خدمات التتبع والأدوات</h3>
+                            <span class="status-indicator status-ok">سليم 100%</span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="health-list">
+                                <li>
+                                    <span class="health-label">Client-Side Meta Pixel:</span>
+                                    <span id="status-pixel-badge" class="badge-status status-active">🟢 مفعّل</span>
+                                </li>
+                                <li>
+                                    <span class="health-label">Server-Side Conversions API (CAPI):</span>
+                                    <span id="status-capi-badge" class="badge-status status-active">🟢 مفعّل</span>
+                                </li>
+                                <li>
+                                    <span class="health-label">معرّف Pixel الحالي:</span>
+                                    <code id="status-pixel-id" class="code-tag">1009559858452835</code>
+                                </li>
+                                <li>
+                                    <span class="health-label">Google Sheets Webhook:</span>
+                                    <span class="badge-status status-active">🟢 متصل</span>
+                                </li>
+                                <li>
+                                    <span class="health-label">Supabase Cloud Storage:</span>
+                                    <span id="status-supabase-badge" class="badge-status status-active">🟢 متصل</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Card -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>⚡ إجراءات سريعة ومختصرات</h3>
+                        </div>
+                        <div class="card-body quick-actions-body">
+                            <button class="btn btn-action" onclick="switchTab('tab-tracking')">
+                                🎯 إعدادات وقيم Meta Pixel & CAPI
+                            </button>
+                            <button class="btn btn-action btn-test-action" onclick="switchTab('tab-tracking'); scrollToCapiTester();">
+                                🧪 اختبار حدث CAPI جديد مباشرة
+                            </button>
+                            <button class="btn btn-action" onclick="switchTab('tab-store')">
+                                🏷️ تعديل أسعار المنتج والشحن
+                            </button>
+                            <button class="btn btn-action" onclick="switchTab('tab-orders')">
+                                📦 عرض جدول الطلبات والأوردرات
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: META PIXEL & CONVERSIONS API -->
+            <section id="tab-tracking" class="tab-content">
+                <div class="section-title-wrap">
+                    <h2>🎯 إدارة وتتبع Meta Pixel & Conversions API (CAPI)</h2>
+                    <p>التحكم الكامل في معرّفات التتبع، مفاتيح الوصول Server-Side، التفعيل والإيقاف، واختبار الأحداث المباشرة</p>
+                </div>
+
+                <!-- CAPI Configuration Form Card -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h3>⚙️ إعدادات Meta Pixel & CAPI</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="tracking-settings-form">
+                            <div class="form-row-2col">
+                                <div class="form-group">
+                                    <label for="setting-pixel-id">
+                                        Meta Pixel ID (معرف بكسل فيسبوك):
+                                        <small class="help-text">يتم إرساله مع أحداث متصفح العميل والسيرفر</small>
+                                    </label>
+                                    <div class="input-with-action">
+                                        <input type="text" id="setting-pixel-id" placeholder="1009559858452835" required>
+                                        <button type="button" class="btn-input-copy" onclick="copyInputVal('setting-pixel-id')">نسخ 📋</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="setting-test-code">
+                                        Test Event Code (رمز اختبار الأحداث):
+                                        <small class="help-text">اختياري: يظهر في Meta Events Manager تحت تبويب Test Events</small>
+                                    </label>
+                                    <input type="text" id="setting-test-code" placeholder="مثال: TEST68192">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="setting-access-token">
+                                    Meta CAPI Access Token (رمز وصول API التحويلات):
+                                    <small class="help-text">المفتاح السري من Meta Events Manager > Settings > Generate Access Token</small>
+                                </label>
+                                <div class="input-with-action">
+                                    <textarea id="setting-access-token" rows="3" placeholder="EAAOyWjBiFr8BR..." required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="toggles-grid">
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <strong>تفعيل Meta Pixel في متصفح العميل (Client-Side)</strong>
+                                        <small>إرسال الأحداث تلقائياً عبر سكريبت fbq</small>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="toggle-pixel-enabled" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <strong>تفعيل Conversions API (Server-Side CAPI)</strong>
+                                        <small>إرسال الأحداث مباشرة من خادم Vercel وتخطي محجبات الإعلانات</small>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="toggle-capi-enabled" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <div class="toggle-card">
+                                    <div class="toggle-info">
+                                        <strong>تفعيل دمج الهوية وتشفير البيانات (PII Deduplication)</strong>
+                                        <small>تشفير الهواتف والأسماء بخوارزمية SHA-256 قبل إرسالها لـ Meta</small>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="toggle-pii-hashing" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-actions-right">
+                                <button type="submit" class="btn btn-save btn-large">💾 حفظ إعدادات Meta Pixel & CAPI</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Live CAPI Tester Tool -->
+                <div class="admin-card highlight-card" id="capi-tester-section">
+                    <div class="card-header border-accent">
+                        <h3>🧪 أداة فحص واختبار أحداث Meta CAPI المباشرة (Live Event Tester)</h3>
+                        <span class="badge-pill badge-tech">Meta Graph API v18.0</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="section-desc">يمكنك استخدام هذه الأداة لإرسال أحداث تجريبية مباشرة إلى سيرفر فيسبوك والتحقق من الاستجابة وكود الحالة وحجم payload دون الحاجة للقيام بطلب حقيقي على المتجر.</p>
+
+                        <div class="tester-grid">
+                            <div class="tester-form">
+                                <div class="form-group">
+                                    <label for="test-event-type">نوع الحدث المطلق (Event Name):</label>
+                                    <select id="test-event-type">
+                                        <option value="PageView">PageView (زيارة الصفحة)</option>
+                                        <option value="ViewContent" selected>ViewContent (عرض منتج السيرم)</option>
+                                        <option value="AddToCart">AddToCart (إضافة للسلّة)</option>
+                                        <option value="InitiateCheckout">InitiateCheckout (بدء الطلب)</option>
+                                        <option value="Purchase">Purchase (طلب مكتمل - شراء)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="test-user-name">اسم العميل التجريبي:</label>
+                                    <input type="text" id="test-user-name" value="أحمد تجريبي">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="test-user-phone">رقم الموبايل التجريبي:</label>
+                                    <input type="tel" id="test-user-phone" value="01012345678">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="test-user-amount">المبلغ والتكلفة (ج.م):</label>
+                                    <input type="number" id="test-user-amount" value="450">
+                                </div>
+
+                                <button id="run-capi-test-btn" class="btn btn-primary btn-pulse-action">
+                                    <span>🚀 إرسال حدث CAPI تجريبي الآن</span>
+                                </button>
+                            </div>
+
+                            <!-- Terminal / Response Log Box -->
+                            <div class="tester-console">
+                                <div class="console-header">
+                                    <span>🖥️ سجل الاستجابة والنتيجة المباشرة</span>
+                                    <button class="btn-mini-clear" onclick="clearConsoleLog()">مسح السجل 🧹</button>
+                                </div>
+                                <div class="console-body" id="capi-console-output">
+                                    <div class="log-entry log-info">[النظام] الأداة جاهزة. اضغط على زر الإرسال لبدء اختبار Facebook CAPI.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: STORE & PRICING SETTINGS -->
+            <section id="tab-store" class="tab-content">
+                <div class="section-title-wrap">
+                    <h2>🛍️ إعدادات المتجر والأسعار والعروض</h2>
+                    <p>التحكم المباشر في سعر المنتج، تكلفة الشحن للمحافظات، نصوص شريط العرض، وعداد التنازلي</p>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h3>🏷️ الأسعار وتكلفة الشحن</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="store-settings-form">
+                            <div class="form-row-2col">
+                                <div class="form-group">
+                                    <label for="setting-base-price">سعر العبوة الواحدة الخصم الحالي (جنيه):</label>
+                                    <input type="number" id="setting-base-price" placeholder="450" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="setting-regular-price">السعر الأصلي قبل الخصم (جنيه):</label>
+                                    <input type="number" id="setting-regular-price" placeholder="900" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row-2col">
+                                <div class="form-group">
+                                    <label for="setting-shipping-standard">شحن المحافظات الرئيسية (القاهرة، الجيزة، إلخ):</label>
+                                    <input type="number" id="setting-shipping-standard" placeholder="0" required>
+                                    <small class="help-text">ضع 0 ليكون الشحن مجانياً</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="setting-shipping-coastal">شحن المناطق الساحلية والنائية (الغردقة، مطروح، إلخ):</label>
+                                    <input type="number" id="setting-shipping-coastal" placeholder="50" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row-2col">
+                                <div class="form-group">
+                                    <label for="setting-stock-remaining">الكمية المتبقية في العرض (عدد العبوات):</label>
+                                    <input type="number" id="setting-stock-remaining" placeholder="14" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="setting-support-phone">رقم هاتف الدعم / الواتساب:</label>
+                                    <input type="tel" id="setting-support-phone" placeholder="01012345678">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="setting-announcement-text">نص شريط الإعلان العلوي (Top Announcement Bar):</label>
+                                <input type="text" id="setting-announcement-text" placeholder="🔥 عرض خاص لفترة محدودة: خصم 50% + شحن مجاني لجميع المحافظات!" required>
+                            </div>
+
+                            <div class="form-actions-right">
+                                <button type="submit" class="btn btn-save btn-large">💾 حفظ إعدادات المتجر والأسعار</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: IMAGES & MEDIA MANAGER -->
+            <section id="tab-images" class="tab-content">
+                <div class="section-title-wrap">
+                    <h2>🖼️ إدارة الصور والوسائط المتغيرة</h2>
+                    <p>رفع وتعديل صور منتج الهيرو، نتائج قبل وبعد، آراء العملاء، وشهادة الضمان المتزامنة مع Supabase Cloud Storage</p>
+                </div>
+
+                <!-- Single Static Images Section -->
+                <div class="image-section">
+                    <div class="section-header">
+                        <h3 class="section-title">📌 الصور الرئيسية للموقع</h3>
+                    </div>
+                    
+                    <div class="image-grid">
+                        <!-- Hero Product Image -->
+                        <div class="image-card">
+                            <div class="image-preview">
+                                <img id="preview-hero-product" src="assets/serum.jpeg" alt="Hero Product">
+                            </div>
+                            <div class="image-actions">
+                                <input type="file" id="file-hero-product" class="file-input" accept="image/*">
+                                <button type="button" class="btn btn-upload" onclick="triggerFileInput('file-hero-product')">اختيار صورة جديدة</button>
+                                <button type="button" class="btn btn-save" onclick="uploadSingleImage('hero_product', 'file-hero-product')">رفع وحفظ</button>
+                                <p class="image-label">صورة المنتج الرئيسية (Hero)</p>
+                            </div>
+                        </div>
+
+                        <!-- Certificate Image -->
+                        <div class="image-card">
+                            <div class="image-preview">
+                                <img id="preview-certificate" src="assets/certificate.jpeg" alt="Certificate">
+                            </div>
+                            <div class="image-actions">
+                                <input type="file" id="file-certificate" class="file-input" accept="image/*">
+                                <button type="button" class="btn btn-upload" onclick="triggerFileInput('file-certificate')">اختيار صورة جديدة</button>
+                                <button type="button" class="btn btn-save" onclick="uploadSingleImage('certificate', 'file-certificate')">رفع وحفظ</button>
+                                <p class="image-label">شهادة الضمان الفعلية</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Opinions Section -->
+                <div class="image-section">
+                    <div class="section-header">
+                        <h3 class="section-title">💬 آراء العملاء وتجارب الواتساب</h3>
+                        <button type="button" class="btn btn-add" onclick="addNewImageCard('customer_opinions')">➕ إضافة رأي عميل جديد</button>
+                    </div>
+                    <div id="grid-customer-opinions" class="image-grid">
+                        <!-- Dynamic opinion cards will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Before & After Section -->
+                <div class="image-section">
+                    <div class="section-header">
+                        <h3 class="section-title">✨ نتائج قبل وبعد الاستخدام</h3>
+                        <button type="button" class="btn btn-add" onclick="addNewImageCard('before_after')">➕ إضافة نتيجة جديدة</button>
+                    </div>
+                    <div id="grid-before-after" class="image-grid">
+                        <!-- Dynamic before/after cards will be rendered here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: ORDERS & LEADS MANAGEMENT -->
+            <section id="tab-orders" class="tab-content">
+                <div class="section-title-wrap">
+                    <h2>📋 إدارة الطلبات والأوردرات المسجلة</h2>
+                    <p>عرض تفاصيل كافة الطلبات المحفوظة، فلترة الحالات، وتصدير البيانات لملفات Excel/CSV</p>
+                </div>
+
+                <div class="admin-card">
+                    <div class="card-header table-header-flex">
+                        <div class="table-title-group">
+                            <h3>📦 قائمة الطلبات المسجلة</h3>
+                            <span id="orders-total-count" class="badge-count">0 طلب</span>
+                        </div>
+                        <div class="table-actions">
+                            <button class="btn btn-action-sm" onclick="exportOrdersCSV()">📥 تصدير CSV</button>
+                            <button class="btn btn-action-sm btn-danger-sm" onclick="clearAllOrders()">🗑️ مسح الكل</button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>معرف الطلب</th>
+                                        <th>التاريخ</th>
+                                        <th>اسم العميل</th>
+                                        <th>رقم الموبايل</th>
+                                        <th>المحافظة والعنوان</th>
+                                        <th>الكمية</th>
+                                        <th>الإجمالي</th>
+                                        <th>الحالة</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    <tr>
+                                        <td colspan="9" class="table-empty">لا توجد طلبات مسجلة حتى الآن</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: SECURITY & SYSTEM SETTINGS -->
+            <section id="tab-security" class="tab-content">
+                <div class="section-title-wrap">
+                    <h2>⚙️ أمان النظام والنسخ الاحتياطي</h2>
+                    <p>تغيير كلمة مرور أدمن لوحة التحكم وإنشاء نسخ احتياطية شاملة لإعدادات الموقع</p>
+                </div>
+
+                <div class="dashboard-grid-2col">
+                    <!-- Security Card -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>🔑 تغيير كلمة مرور الأدمن</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="password-change-form">
+                                <div class="form-group">
+                                    <label for="pwd-current">كلمة المرور الحالية:</label>
+                                    <input type="password" id="pwd-current" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd-new">كلمة المرور الجديدة:</label>
+                                    <input type="password" id="pwd-new" required minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd-confirm">تأكيد كلمة المرور الجديدة:</label>
+                                    <input type="password" id="pwd-confirm" required minlength="6">
+                                </div>
+                                <button type="submit" class="btn btn-primary">تحديث كلمة المرور</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Backup & Restore Card -->
+                    <div class="admin-card">
+                        <div class="card-header">
+                            <h3>💾 النسخ الاحتياطي وتصدير البيانات</h3>
+                        </div>
+                        <div class="card-body backup-actions-body">
+                            <p>يمكنك تصدير كافة الإعدادات والروابط والأسعار كملف JSON واستعادتها في أي وقت.</p>
+                            
+                            <button class="btn btn-action btn-large" onclick="exportSystemConfig()">
+                                📤 تصدير نسخة احتياطية من الإعدادات (JSON)
+                            </button>
+
+                            <div class="import-box">
+                                <label for="import-json-file" class="btn btn-action-secondary btn-large">
+                                    📥 استرجاع إعدادات من ملف JSON
+                                </label>
+                                <input type="file" id="import-json-file" accept=".json" style="display:none;" onchange="importSystemConfig(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="admin.js?v=2"></script>
+</body>
+</html>

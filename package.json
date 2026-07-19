@@ -1,0 +1,9 @@
+{
+  "name": "ihair-egypt-landing",
+  "version": "1.0.0",
+  "description": "iHair Egypt – Turkish Hair Serum Landing Page",
+  "private": true,
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
