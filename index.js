@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Record real page views for Admin Analytics
+    try {
+        const v = parseInt(localStorage.getItem('ihair_page_views') || '0') + 1;
+        localStorage.setItem('ihair_page_views', v);
+    } catch(e){}
     
     // Track Facebook Pixel ViewContent Event on page load (Browser-side)
     if (typeof fbq !== 'undefined') {
@@ -340,6 +345,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const subtotal = basePrice * quantity;
         const total = subtotal + shipping;
         
+        // Increment real checkouts counter for Admin Dashboard
+        try {
+            const checkouts = parseInt(localStorage.getItem('ihair_checkouts_count') || '0') + 1;
+            localStorage.setItem('ihair_checkouts_count', checkouts);
+        } catch(e){}
+
         // Track Facebook Pixel InitiateCheckout Event (Browser-side)
         if (typeof fbq !== 'undefined') {
             fbq('track', 'InitiateCheckout', {

@@ -73,28 +73,28 @@
 
             <!-- Tab Navigation Bar -->
             <nav class="admin-nav-tabs">
-                <button class="nav-tab active" data-tab="tab-overview">
+                <button type="button" class="nav-tab active" data-tab="tab-overview" onclick="switchTab('tab-overview')">
                     <span class="tab-icon">📊</span>
                     <span>النظرة العامة والتحليلات</span>
                 </button>
-                <button class="nav-tab" data-tab="tab-tracking">
+                <button type="button" class="nav-tab" data-tab="tab-tracking" onclick="switchTab('tab-tracking')">
                     <span class="tab-icon">🎯</span>
                     <span>Meta Pixel & CAPI</span>
                 </button>
-                <button class="nav-tab" data-tab="tab-store">
+                <button type="button" class="nav-tab" data-tab="tab-store" onclick="switchTab('tab-store')">
                     <span class="tab-icon">🛍️</span>
                     <span>إعدادات المتجر والأسعار</span>
                 </button>
-                <button class="nav-tab" data-tab="tab-images">
+                <button type="button" class="nav-tab" data-tab="tab-images" onclick="switchTab('tab-images')">
                     <span class="tab-icon">🖼️</span>
                     <span>إدارة الصور والوسائط</span>
                 </button>
-                <button class="nav-tab" data-tab="tab-orders">
+                <button type="button" class="nav-tab" data-tab="tab-orders" onclick="switchTab('tab-orders')">
                     <span class="tab-icon">📋</span>
                     <span>إدارة الطلبات</span>
                     <span id="orders-badge-count" class="badge-pill">0</span>
                 </button>
-                <button class="nav-tab" data-tab="tab-security">
+                <button type="button" class="nav-tab" data-tab="tab-security" onclick="switchTab('tab-security')">
                     <span class="tab-icon">⚙️</span>
                     <span>الأمان والنظام</span>
                 </button>
@@ -117,8 +117,8 @@
                         <div class="stat-icon icon-blue">👁️</div>
                         <div class="stat-info">
                             <span class="stat-title">إجمالي زيارات الموقع</span>
-                            <h3 id="stat-views-val">1,420</h3>
-                            <small class="stat-meta">زيارة في آخر 30 يوماً</small>
+                            <h3 id="stat-views-val">0</h3>
+                            <small class="stat-meta">زيارات فعلية مسجلة</small>
                         </div>
                     </div>
 
@@ -126,8 +126,8 @@
                         <div class="stat-icon icon-yellow">🛒</div>
                         <div class="stat-info">
                             <span class="stat-title">محاولات الشراء (Initiate Checkout)</span>
-                            <h3 id="stat-checkouts-val">184</h3>
-                            <small class="stat-meta">معدل اهتمام ممتاز</small>
+                            <h3 id="stat-checkouts-val">0</h3>
+                            <small class="stat-meta">محاولات شراء حقيقية</small>
                         </div>
                     </div>
 
@@ -136,7 +136,7 @@
                         <div class="stat-info">
                             <span class="stat-title">الطلبات المسجلة</span>
                             <h3 id="stat-orders-val">0</h3>
-                            <small class="stat-meta">طلب مكتمل الدفع عند الاستلام</small>
+                            <small class="stat-meta">طلبات حقيقية مسجلة</small>
                         </div>
                     </div>
 
@@ -145,7 +145,7 @@
                         <div class="stat-info">
                             <span class="stat-title">إجمالي المبيعات المستهدفة</span>
                             <h3 id="stat-revenue-val">0 ج.م</h3>
-                            <small class="stat-meta">بناءً على طلبات العملاء</small>
+                            <small class="stat-meta">إيرادات الطلبات المسجلة</small>
                         </div>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
                                 </li>
                                 <li>
                                     <span class="health-label">معرّف Pixel الحالي:</span>
-                                    <code id="status-pixel-id" class="code-tag">1009559858452835</code>
+                                    <code id="status-pixel-id" class="code-tag">جاري التحميل...</code>
                                 </li>
                                 <li>
                                     <span class="health-label">Google Sheets Webhook:</span>
@@ -318,17 +318,17 @@
 
                                 <div class="form-group">
                                     <label for="test-user-name">اسم العميل التجريبي:</label>
-                                    <input type="text" id="test-user-name" value="أحمد تجريبي">
+                                    <input type="text" id="test-user-name" placeholder="أدخل اسم العميل التجريبي">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="test-user-phone">رقم الموبايل التجريبي:</label>
-                                    <input type="tel" id="test-user-phone" value="01012345678">
+                                    <input type="tel" id="test-user-phone" placeholder="01012345678">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="test-user-amount">المبلغ والتكلفة (ج.م):</label>
-                                    <input type="number" id="test-user-amount" value="450">
+                                    <input type="number" id="test-user-amount" placeholder="450">
                                 </div>
 
                                 <button id="run-capi-test-btn" class="btn btn-primary btn-pulse-action">

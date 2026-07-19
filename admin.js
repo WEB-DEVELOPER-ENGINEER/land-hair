@@ -225,6 +225,16 @@ function updateOverviewStats() {
     const s = State.settings;
     const leads = getLeads();
 
+    // Live Page Views and Checkouts
+    const viewsVal = parseInt(localStorage.getItem('ihair_page_views') || '1');
+    const checkoutsVal = parseInt(localStorage.getItem('ihair_checkouts_count') || '0');
+
+    const viewsEl = document.getElementById('stat-views-val');
+    if (viewsEl) viewsEl.textContent = viewsVal.toLocaleString('ar-EG');
+
+    const checkoutsEl = document.getElementById('stat-checkouts-val');
+    if (checkoutsEl) checkoutsEl.textContent = checkoutsVal.toLocaleString('ar-EG');
+
     // Badges
     const statusPixelId = document.getElementById('status-pixel-id');
     if (statusPixelId) statusPixelId.textContent = s.pixel_id || 'غير محدد';
@@ -295,9 +305,9 @@ function logToConsole(message, type = 'info', jsonObj = null) {
 
 async function runCapiTestEvent() {
     const eventType = document.getElementById('test-event-type').value;
-    const name = document.getElementById('test-user-name').value;
-    const phone = document.getElementById('test-user-phone').value;
-    const amount = parseFloat(document.getElementById('test-user-amount').value) || 450;
+    const name = document.getElementById('test-user-name').value.trim() || 'عميل تجريبي';
+    const phone = document.getElementById('test-user-phone').value.trim() || '01012345678';
+    const amount = parseFloat(document.getElementById('test-user-amount').value) || (parseFloat(State.settings.base_price) || 450);
     
     const settings = State.settings;
 
